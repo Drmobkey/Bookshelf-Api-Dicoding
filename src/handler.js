@@ -44,7 +44,7 @@ const addBookHandler = (request, h) => {
   return h
     .response({
       status: 'success',
-      message: 'Buku berhasil ditambahka'
+      message: 'Buku berhasil ditambahkan'
   }).code(201);
 };
 
@@ -59,8 +59,20 @@ const getAllBooksHandler = () => {
             });
             
         }
+
+        return h.response({
+            status: 'success',
+            data: {
+                books: books.map(({id, name, publisher})=>({id, name, publisher})),
+            },
+        });
+
+
     } catch (error) {
-        
+        return h.response({
+            status: 'fail',
+            message: 'Gagal mengambil data buku',
+        });
     }
 };
 
@@ -69,3 +81,11 @@ const getBookByIdHandler = (request,h) => {};
 const updateBookHandler = (request, h) => {};
 
 const deleteBookHandler = (request, h) => {};
+
+module.exports = {
+ addBookHandler,
+ getAllBooksHandler,
+ getBookByIdHandler,
+ updateBookHandler,
+ deleteBookHandler,
+};
