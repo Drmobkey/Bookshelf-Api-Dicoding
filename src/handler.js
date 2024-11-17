@@ -76,11 +76,80 @@ const getAllBooksHandler = () => {
     }
 };
 
-const getBookByIdHandler = (request,h) => {};
+const getBookByIdHandler = (request,h) => {
+  const { bookId } = request.params;
+  const book = books.find((b) => b.id === bookId);
 
-const updateBookHandler = (request, h) => {};
+  if ( !book ) {
+    return h.response ({
+      status: 'fail',
+      message: 'Buku tidak ditemukan',
+    }).code(404);
+    
+  }
 
-const deleteBookHandler = (request, h) => {};
+  return h.response ({
+    status: 'fail',
+    data: {book},
+  });
+
+
+};
+
+const updateBookHandler = (request, h) => {
+  const {bookId} = request.params;
+  const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
+  const index = books.findIndex((b)=> b.id === bookId);
+
+  if (index === -1) {
+    return h.response({
+      status: 'fail',
+      message: 'Gagal memperbarui buku. Id tidak ditemukan',
+    }).code(404);
+  }
+  
+  if (!name) {
+    return h.response({
+      status: 'fail',
+      message: 'Gagl memperbarui buku. Mohon isi nama buku',
+    }).code(400);
+  }
+
+  if (readPage>pageCount) {
+    return h.response({
+      status: 'fail',
+      message:
+        'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+    }).code(400);
+  }
+
+  const updatedAt= new Date().toISOString();
+  const finished = pageCount === readPage;
+  books[index] = { ...books[index], name, year, author, summary, publisher, pageCount, readPage, reading, finished, updatedAt };
+
+  return h.response({
+    status: 'success',
+    message: 'Buku berhasil diperbarui',
+  }).code(200);
+};
+
+const deleteBookHandler = (request, h) => {
+  const{bookId} = request.params;
+  const index = books.findIndex((b)=>b.id === bookId);
+
+  if (index === -1) {
+    return h.response({
+      status: 'fail',
+      message: 'Gagal memperbarui buku. Id tidak ditemukan',
+    }).code(404);
+  }
+
+  books.splice(index, 1);
+  return h.response({
+    status: 'success',
+    message: 'Buku berhasil dihapus',
+  }).code(200);
+};
 
 module.exports = {
  addBookHandler,
