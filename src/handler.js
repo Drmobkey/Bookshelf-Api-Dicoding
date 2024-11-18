@@ -48,32 +48,62 @@ const addBookHandler = (request, h) => {
   }).code(201);
 };
 
-const getAllBooksHandler = () => {
-    try {
-        if (books.length === 0) {
-            return h.response({
-                status: 'success',
-                data: {
-                    books: [],
-                },
-            });
-            
-        }
+const getAllBooksHandler = (request, h) => {
+  try {
+    const { name, reading, finished } = request.query; // Ambil query parameter
 
-        return h.response({
-            status: 'success',
-            data: {
-                books: books.map(({id, name, publisher})=>({id, name, publisher})),
-            },
-        });
+    // Mulai dengan semua buku
+    let filteredBooks = books;
 
-
-    } catch (error) {
-        return h.response({
-            status: 'fail',
-            message: 'Gagal mengambil data buku',
-        });
+    // Filter berdasarkan nama (jika ada)
+    if (name) {
+      filteredBooks = filteredBooks.filter((book) =>
+        book.name && book.name.toLowerCase().includes(name.toLowerCase())
+      );
     }
+
+    // Filter berdasarkan reading (jika ada)
+    if (reading !== undefined) {
+      filteredBooks = filteredBooks.filter(
+        (book) => book.reading === (reading === '1')
+      );
+    }
+
+    // Filter berdasarkan finished (jika ada)
+    if (finished !== undefined) {
+      filteredBooks = filteredBooks.filter(
+        (book) => book.finished === (finished === '1')
+      );
+    }
+
+    // Respons jika tidak ada buku yang cocok
+    if (filteredBooks.length === 0) {
+      return h.response({
+        status: 'success',
+        data: {
+          books: [],
+        },
+      }).code(200);
+    }
+
+    // Respons sukses dengan data buku yang difilter
+    return h.response({
+      status: 'success',
+      data: {
+        books: filteredBooks.map(({ id, name, publisher }) => ({
+          id,
+          name,
+          publisher,
+        })),
+      },
+    }).code(200);
+  } catch (error) {
+    console.error('Error:', error); // Debugging: tangkap error
+    return h.response({
+      status: 'fail',
+      message: 'Gagal mengambil data buku',
+    }).code(500);
+  }
 };
 
 const getBookByIdHandler = (request,h) => {
@@ -89,7 +119,7 @@ const getBookByIdHandler = (request,h) => {
   }
 
   return h.response ({
-    status: 'fail',
+    status: 'success',
     data: {book},
   });
 
@@ -111,7 +141,7 @@ const updateBookHandler = (request, h) => {
   if (!name) {
     return h.response({
       status: 'fail',
-      message: 'Gagl memperbarui buku. Mohon isi nama buku',
+      message: 'Gagal memperbarui buku. Mohon isi nama buku',
     }).code(400);
   }
 
@@ -140,7 +170,7 @@ const deleteBookHandler = (request, h) => {
   if (index === -1) {
     return h.response({
       status: 'fail',
-      message: 'Gagal memperbarui buku. Id tidak ditemukan',
+      message: 'Buku gagal dihapus. Id tidak ditemukan',
     }).code(404);
   }
 
