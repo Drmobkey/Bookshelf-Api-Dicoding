@@ -45,7 +45,7 @@ const addBookHandler = (request, h) => {
     .response({
       status: 'success',
       message: 'Buku berhasil ditambahkan'
-  }).code(201);
+    }).code(201);
 };
 
 const getAllBooksHandler = (request, h) => {
@@ -106,28 +106,28 @@ const getAllBooksHandler = (request, h) => {
   }
 };
 
-const getBookByIdHandler = (request,h) => {
+const getBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
   const book = books.find((b) => b.id === bookId);
 
-  if ( !book ) {
-    return h.response ({
+  if (!book) {
+    return h.response({
       status: 'fail',
       message: 'Buku tidak ditemukan',
     }).code(404);
-    
+
   }
 
-  return h.response ({
+  return h.response({
     status: 'success',
-    data: {book},
+    data: { book },
   });
 
 
 };
 
 const updateBookHandler = (request, h) => {
-  const {bookId} = request.params;
+  const { bookId } = request.params;
   const { name, year, author, summary, publisher, pageCount, readPage, reading } = request.payload;
   const index = books.findIndex((b)=> b.id === bookId);
 
@@ -137,7 +137,7 @@ const updateBookHandler = (request, h) => {
       message: 'Gagal memperbarui buku. Id tidak ditemukan',
     }).code(404);
   }
-  
+
   if (!name) {
     return h.response({
       status: 'fail',
@@ -164,7 +164,7 @@ const updateBookHandler = (request, h) => {
 };
 
 const deleteBookHandler = (request, h) => {
-  const{bookId} = request.params;
+  const { bookId } = request.params;
   const index = books.findIndex((b)=>b.id === bookId);
 
   if (index === -1) {
@@ -182,9 +182,9 @@ const deleteBookHandler = (request, h) => {
 };
 
 module.exports = {
- addBookHandler,
- getAllBooksHandler,
- getBookByIdHandler,
- updateBookHandler,
- deleteBookHandler,
+  addBookHandler,
+  getAllBooksHandler,
+  getBookByIdHandler,
+  updateBookHandler,
+  deleteBookHandler,
 };
